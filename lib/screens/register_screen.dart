@@ -27,9 +27,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
 
     if (response.statusCode == 201) {
-      setState(() => message = 'Inscription réussie. Connectez-vous.');
-      await Future.delayed(const Duration(seconds: 10));
       if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Inscription réussie. Connectez-vous.")),
+      );
       Navigator.pushReplacementNamed(context, '/');
     } else {
       final error = json.decode(response.body);
@@ -45,16 +46,29 @@ class _RegisterScreenState extends State<RegisterScreen> {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            TextField(controller: nameController, decoration: const InputDecoration(labelText: 'Nom')),
-            TextField(controller: emailController, decoration: const InputDecoration(labelText: 'Email')),
-            TextField(controller: passwordController, obscureText: true, decoration: const InputDecoration(labelText: 'Mot de passe')),
+            TextField(
+              controller: nameController,
+              decoration: const InputDecoration(labelText: 'Nom'),
+            ),
+            TextField(
+              controller: emailController,
+              decoration: const InputDecoration(labelText: 'Email'),
+            ),
+            TextField(
+              controller: passwordController,
+              obscureText: true,
+              decoration: const InputDecoration(labelText: 'Mot de passe'),
+            ),
             const SizedBox(height: 20),
-            ElevatedButton(onPressed: register, child: const Text("S'inscrire")),
+            ElevatedButton(
+              onPressed: register,
+              child: const Text("S'inscrire"),
+            ),
             if (message.isNotEmpty)
               Padding(
                 padding: const EdgeInsets.only(top: 10),
                 child: Text(message, style: const TextStyle(color: Colors.red)),
-              )
+              ),
           ],
         ),
       ),

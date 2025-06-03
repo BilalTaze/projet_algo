@@ -41,7 +41,7 @@ class _FriendsScreenState extends State<FriendsScreen> {
     return Scaffold(
       appBar: AppBar(title: const Text('Mes amis')),
       body: friends.isEmpty
-          ? const Center(child: CircularProgressIndicator())
+          ? const Center(child: Text('Aucun ami trouvé'))
           : ListView.builder(
               itemCount: friends.length,
               itemBuilder: (context, index) {

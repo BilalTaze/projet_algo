@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:projet_algo/screens/all_users_screen.dart';
 import 'dart:convert';
 
 import 'package:projet_algo/screens/create_post_screen.dart';
 import 'package:projet_algo/screens/friends_screen.dart';
+import 'package:projet_algo/screens/pending_requests_screen.dart';
 import 'package:projet_algo/screens/profile_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -45,6 +47,18 @@ class _HomeScreenState extends State<HomeScreen> {
         title: const Text('Fil d’actualité'),
         actions: [
           IconButton(
+            icon: const Icon(Icons.mail),
+            tooltip: 'Demandes reçues',
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const PendingRequestsScreen(),
+                ),
+              );
+            },
+          ),
+          IconButton(
             icon: const Icon(Icons.people),
             tooltip: 'Mes amis',
             onPressed: () {
@@ -61,6 +75,16 @@ class _HomeScreenState extends State<HomeScreen> {
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (_) => const ProfileScreen()),
+              );
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.group_add),
+            tooltip: 'Utilisateurs',
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const AllUsersScreen()),
               );
             },
           ),
