@@ -41,29 +41,75 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Créer un post')),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
+      appBar: AppBar(title: const Text('Créer un post'), centerTitle: true),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(20),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            const Text(
+              'Exprime-toi !',
+              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 12),
             TextField(
               controller: contentController,
-              decoration: const InputDecoration(labelText: 'Contenu du post'),
-              maxLines: 5,
+              maxLines: 6,
+              decoration: InputDecoration(
+                hintText: 'Écris ton post ici...',
+                filled: true,
+                fillColor: Colors.grey[100],
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
             ),
-            const SizedBox(height: 10),
-            DropdownButton<String>(
+            const SizedBox(height: 16),
+            const Text(
+              'Visibilité',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+            ),
+            const SizedBox(height: 8),
+            DropdownButtonFormField<String>(
               value: visibility,
+              decoration: InputDecoration(
+                filled: true,
+                fillColor: Colors.grey[100],
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
               onChanged: (value) => setState(() => visibility = value!),
               items: const [
-                DropdownMenuItem(value: 'public', child: Text('Public')),
-                DropdownMenuItem(value: 'friends', child: Text('Amis uniquement')),
-                DropdownMenuItem(value: 'private', child: Text('Privé')),
+                DropdownMenuItem(value: 'public', child: Text('🌐 Public')),
+                DropdownMenuItem(
+                  value: 'friends',
+                  child: Text('👥 Amis uniquement'),
+                ),
+                DropdownMenuItem(value: 'private', child: Text('🔒 Privé')),
               ],
             ),
-            const SizedBox(height: 20),
-            ElevatedButton(onPressed: submitPost, child: const Text('Publier')),
-            if (message.isNotEmpty) Text(message, style: const TextStyle(color: Colors.red)),
+            const SizedBox(height: 24),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: submitPost,
+                icon: const Icon(Icons.send),
+                label: const Text('Publier'),
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  textStyle: const TextStyle(fontSize: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+              ),
+            ),
+            if (message.isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.only(top: 12),
+                child: Text(message, style: const TextStyle(color: Colors.red)),
+              ),
           ],
         ),
       ),

@@ -115,13 +115,58 @@ class _HomeScreenState extends State<HomeScreen> {
               ? const Center(child: CircularProgressIndicator())
               : ListView.builder(
                 itemCount: posts.length,
+                padding: const EdgeInsets.all(12),
                 itemBuilder: (context, index) {
                   final post = posts[index];
+                  final isPublic = post['visibility'] == 'public';
+                  final isFriend =post['visibility'] == 'friends';
+
                   return Card(
-                    child: ListTile(
-                      title: Text(post['author'] ?? ''),
-                      subtitle: Text(post['content']),
-                      trailing: Text(post['visibility']),
+                    elevation: 4,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    margin: const EdgeInsets.only(bottom: 16),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Icon(
+                                isPublic ? Icons.public : (isFriend ? Icons.group : Icons.lock),
+                                size: 18,
+                                color: isPublic ? Colors.green : Colors.red,
+                              ),
+                              const SizedBox(width: 8),
+                              Text(
+                                post['author'] ?? 'Inconnu',
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 12),
+                          Text(
+                            post['content'],
+                            style: const TextStyle(fontSize: 15),
+                          ),
+                          const SizedBox(height: 12),
+                          Align(
+                            alignment: Alignment.bottomRight,
+                            child: Text(
+                              post['createdAt'] ?? '',
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.grey[600],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   );
                 },

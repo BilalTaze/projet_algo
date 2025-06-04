@@ -59,17 +59,24 @@ class _AllUsersScreenState extends State<AllUsersScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Tous les utilisateurs")),
+      appBar: AppBar(
+        title: const Text("Tous les utilisateurs"),
+        centerTitle: true,
+      ),
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(12),
             child: TextField(
               controller: searchController,
-              decoration: const InputDecoration(
-                labelText: 'Rechercher par nom ou email',
-                prefixIcon: Icon(Icons.search),
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                hintText: '🔍 Rechercher un nom ou un email',
+                filled: true,
+                fillColor: Colors.grey[100],
+                prefixIcon: const Icon(Icons.search),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
               ),
               onChanged: (val) {
                 setState(() => query = val.toLowerCase());
@@ -84,7 +91,6 @@ class _AllUsersScreenState extends State<AllUsersScreen> {
                 final name = u['name'].toString().toLowerCase();
                 final email = u['email'].toString().toLowerCase();
 
-                // Filtrer selon la recherche
                 if (query.isNotEmpty &&
                     !name.contains(query) &&
                     !email.contains(query)) {
@@ -93,31 +99,69 @@ class _AllUsersScreenState extends State<AllUsersScreen> {
 
                 final alreadySent = sentRequests.contains(u['id']);
 
-                return ListTile(
-                  title: Text(u['name']),
-                  subtitle: Text(u['email']),
-                  trailing: Wrap(
-                    spacing: 8,
-                    children: [
-                      ElevatedButton(
-                        onPressed:
-                            alreadySent
-                                ? null
-                                : () => sendFriendRequest(u['id']),
-                        child: Text(alreadySent ? "Envoyée" : "Ajouter"),
+                return Card(
+                  margin: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
+                  elevation: 2,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: ListTile(
+                    contentPadding: const EdgeInsets.all(12),
+                    leading: CircleAvatar(
+                      backgroundColor: Colors.blue[100],
+                      child: Text(
+                        u['name'][0].toUpperCase(),
+                        style: const TextStyle(fontWeight: FontWeight.bold),
                       ),
-                      OutlinedButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => UserProfileScreen(user: u),
+                    ),
+                    title: Text(
+                      u['name'],
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    subtitle: Text(u['email']),
+                    trailing: Wrap(
+                      spacing: 8,
+                      children: [
+                        ElevatedButton(
+                          onPressed:
+                              alreadySent
+                                  ? null
+                                  : () => sendFriendRequest(u['id']),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor:
+                                alreadySent ? Colors.grey : Colors.blue,
+                            padding: const EdgeInsets.symmetric(horizontal: 12),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
                             ),
-                          );
-                        },
-                        child: const Text('Voir'),
-                      ),
-                    ],
+                          ),
+                          child: Text(alreadySent ? "Envoyée" : "Ajouter"),
+                        ),
+                        OutlinedButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => UserProfileScreen(user: u),
+                              ),
+                            );
+                          },
+                          style: OutlinedButton.styleFrom(
+                            side: const BorderSide(color: Colors.blue),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                          child: const Text('Voir'),
+                        ),
+                      ],
+                    ),
                   ),
                 );
               },

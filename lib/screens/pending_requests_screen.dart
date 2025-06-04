@@ -53,24 +53,49 @@ class _PendingRequestsScreenState extends State<PendingRequestsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey[100],
       appBar: AppBar(title: const Text('Demandes d’amis')),
-      body: requests.isEmpty
-          ? const Center(child: Text('Aucune demande en attente'))
-          : ListView.builder(
-              itemCount: requests.length,
-              itemBuilder: (context, index) {
-                final request = requests[index];
-                final from = request['from'];
-                return ListTile(
-                  title: Text(from['name']),
-                  subtitle: Text(from['email']),
-                  trailing: ElevatedButton(
-                    onPressed: () => acceptRequest(request['id']),
-                    child: const Text('Accepter'),
-                  ),
-                );
-              },
-            ),
+      body:
+          requests.isEmpty
+              ? const Center(child: Text('Aucune demande en attente'))
+              : ListView.builder(
+                padding: const EdgeInsets.all(12),
+                itemCount: requests.length,
+                itemBuilder: (context, index) {
+                  final request = requests[index];
+                  final from = request['from'];
+
+                  return Card(
+                    elevation: 3,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    margin: const EdgeInsets.only(bottom: 12),
+                    child: ListTile(
+                      leading: const CircleAvatar(
+                        backgroundColor: Colors.indigo,
+                        child: Icon(Icons.person, color: Colors.white),
+                      ),
+                      title: Text(
+                        from['name'],
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      subtitle: Text(from['email']),
+                      trailing: ElevatedButton.icon(
+                        icon: const Icon(Icons.check, size: 18),
+                        label: const Text('Accepter'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.green,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        onPressed: () => acceptRequest(request['id']),
+                      ),
+                    ),
+                  );
+                },
+              ),
     );
   }
 }
