@@ -6,8 +6,10 @@ import 'dart:convert';
 
 import 'package:projet_algo/screens/create_post_screen.dart';
 import 'package:projet_algo/screens/friends_screen.dart';
+import 'package:projet_algo/screens/notifications_screen.dart';
 import 'package:projet_algo/screens/pending_requests_screen.dart';
 import 'package:projet_algo/screens/profile_screen.dart';
+import 'package:projet_algo/screens/suggested_friends_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -19,6 +21,8 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final storage = const FlutterSecureStorage();
   List posts = [];
+  bool hasUnreadNotifications = false;
+  int unreadMessages = 0;
 
   Future<void> fetchPosts() async {
     final token = await storage.read(key: 'token');
@@ -34,10 +38,27 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  Future<void> checkNotifications() async {
+    final token = await storage.read(key: 'token');
+    final response = await http.get(
+      Uri.parse('http://localhost:8000/api/notifications'),
+      headers: {'Authorization': 'Bearer $token'},
+    );
+
+    if (response.statusCode == 200) {
+      final List notifs = json.decode(response.body);
+      final unread = notifs.any((n) => n['isRead'] == false);
+      setState(() {
+        hasUnreadNotifications = unread;
+      });
+    }
+  }
+
   @override
   void initState() {
     super.initState();
     fetchPosts();
+    checkNotifications();
   }
 
   @override
@@ -89,6 +110,19 @@ class _HomeScreenState extends State<HomeScreen> {
             },
           ),
           IconButton(
+            icon: const Icon(Icons.person_add_alt_1),
+            tooltip: 'Suggestions',
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const SuggestedFriendsScreen(),
+                ),
+              );
+            },
+          ),
+
+          IconButton(
             icon: const Icon(Icons.logout),
             tooltip: 'Déconnexion',
             onPressed: () async {
@@ -97,6 +131,35 @@ class _HomeScreenState extends State<HomeScreen> {
               if (!context.mounted) return;
               Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
             },
+          ),
+          Stack(
+            children: [
+              IconButton(
+                icon: const Icon(Icons.notifications),
+                tooltip: 'Notifications',
+                onPressed: () async {
+                  await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const NotificationsScreen(),
+                    ),
+                  );
+                  checkNotifications(); // Refresh on return
+                },
+              ),
+              if (hasUnreadNotifications)
+                Positioned(
+                  right: 11,
+                  top: 11,
+                  child: Container(
+                    padding: const EdgeInsets.all(5),
+                    decoration: const BoxDecoration(
+                      color: Colors.red,
+                      shape: BoxShape.circle,
+                    ),
+                  ),
+                ),
+            ],
           ),
         ],
       ),
@@ -119,7 +182,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 itemBuilder: (context, index) {
                   final post = posts[index];
                   final isPublic = post['visibility'] == 'public';
-                  final isFriend =post['visibility'] == 'friends';
+                  final isFriend = post['visibility'] == 'friends';
 
                   return Card(
                     elevation: 4,
@@ -135,7 +198,9 @@ class _HomeScreenState extends State<HomeScreen> {
                           Row(
                             children: [
                               Icon(
-                                isPublic ? Icons.public : (isFriend ? Icons.group : Icons.lock),
+                                isPublic
+                                    ? Icons.public
+                                    : (isFriend ? Icons.group : Icons.lock),
                                 size: 18,
                                 color: isPublic ? Colors.green : Colors.red,
                               ),
